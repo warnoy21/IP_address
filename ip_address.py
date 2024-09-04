@@ -62,16 +62,4 @@ if __name__ == "__main__":
 
     display_ip()
 
-    while True:
-        #if reset button pressed, it retries to obtain its IP
-        if GPIO.input(BUTTON_PIN) == GPIO.HIGH:
-           lcd.clear()
-           print("pressed") # debugging
-           time.sleep(0.2) #to give a flick for UI
-           display_ip()
-           
-           # Wait for a short period to debounce the button
-           time.sleep(0.5)
-
-            # Optional: add a small delay to reduce CPU usage
-    time.sleep(1)
+   
