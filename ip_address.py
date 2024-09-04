@@ -14,15 +14,13 @@
 
 from RPLCD.i2c import CharLCD
 import socket
-import RPi.GPIO as GPIO
+
 import time
-BUTTON_PIN = 26 #change based on the GPIO to be used
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTON_PIN,GPIO.IN)
+
 
 # Initialize the LCD with the correct I2C expander and address
 lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, dotsize=8)
-
+time.sleep(10) #give time to initialize wifii connection 
 def get_ip_address():
     """
     Get it's Ip address
