@@ -20,7 +20,7 @@ import time
 
 # Initialize the LCD with the correct I2C expander and address
 lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, dotsize=8)
-time.sleep(10) #give time to initialize wifii connection 
+time.sleep(30) #give time to initialize wifii connection 
 def get_ip_address():
     """
     Get it's Ip address
