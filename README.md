@@ -16,3 +16,4 @@ Install necessary librariy
 •	sudo pip3 install RPLCD smbus2
 Run this command to check I2C’s address
 •	sudo i2cdetect -y 1
+
