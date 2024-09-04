@@ -13,15 +13,20 @@
 
 from RPLCD.i2c import CharLCD
 import socket
-import Rpi.GPIO as GPIO
-
+import RPi.GPIO as GPIO
+import time
+BUTTON_PIN = 26 #change based on the GPIO to be used
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(BUTTON_PIN,GPIO.IN)
 
 # Initialize the LCD with the correct I2C expander and address
-lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, do>
+lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, dotsize=8)
 
 def get_ip_address():
+    """
+    Get it's Ip address
+    return: the IP address ,else None
+    """
     # Create a socket object
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -31,8 +36,7 @@ def get_ip_address():
         # Get the IP address of the device
         ip_address = s.getsockname()[0]
     except Exception as e:
-        # If there is an error, print it and return None
-        print(f"Error: {e}")
+        # If there is an error, return None
         ip_address = None
     finally:
         # Close the socket
@@ -40,14 +44,33 @@ def get_ip_address():
 
     return ip_address
 
-if __name__ == "__main__":
+def display_ip():
+    """
+    Displays the IP address and server name , else no wifii
+    return: NA
+    """
+
     ip = get_ip_address()
-    lcd.clear()
     if ip:
-        # Clear the LCD and write the IP address
-        lcd.write_string(f"{ip}")
-        lcd.cursor_pos = (1,3 )  # (row, column) #indentation
-        lcd.write_string('flsun.local') #replace to match your server
-    #This will tell us if the raspi has a conenction to the wifii
+        lcd.write_string(ip)
+        lcd.cursor_pos = (1, 3)  # (row, column)
+        lcd.write_string('flsun.local')
     else:
         lcd.write_string("Could not determine IP address.")
+if __name__ == "__main__":
+
+    display_ip()
+
+    while True:
+        #if reset button pressed, it retries to obtain its IP
+        if GPIO.input(BUTTON_PIN) == GPIO.HIGH:
+           lcd.clear()
+           print("pressed") # debugging
+           time.sleep(0.2) #to give a flick for UI
+           display_ip()
+           
+           # Wait for a short period to debounce the button
+           time.sleep(0.5)
+
+            # Optional: add a small delay to reduce CPU usage
+    time.sleep(1)
