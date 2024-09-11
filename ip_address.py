@@ -1,26 +1,29 @@
 
 #####################################################
-# MicroPython that for Raspberry pi 4 that programs an I2C LCD module to display it's IP address and 
+# MicroPython that for Raspberry pi 4 that programs an I2C LCD module to display it's IP address and
 # local's server when connected to the wifii or let the user know it isnt connected to wifii for 3D printing to
 # avoid the annoyance of plugging in a monitor or using ssh tools to find out the IP once the 3D printer was not put on
 # used for a long time.
 #
-# Made by : Dabakama_Mindset         
+# Made by : Dabakama_Mindset
 # Date    : September 2,2024
+#         : September 3,2024 : added a button to rerun the fetcing of IP address just incase wifii took longer to initialize
 #
-#####################################################
+###############################################################################################################################
 
 
 
 from RPLCD.i2c import CharLCD
 import socket
-
+import RPi.GPIO as GPIO
 import time
-
+BUTTON_PIN = 26 #change based on the GPIO to be used
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BUTTON_PIN,GPIO.IN)
 
 # Initialize the LCD with the correct I2C expander and address
 lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, dotsize=8)
-time.sleep(30) #give time to initialize wifii connection 
+
 def get_ip_address():
     """
     Get it's Ip address
@@ -57,7 +60,19 @@ def display_ip():
     else:
         lcd.write_string("Could not determine IP address.")
 if __name__ == "__main__":
-
+    time.sleep(10) #give time to initialize wifii
     display_ip()
 
-   
+    while True:
+        #if reset button pressed, it retries to obtain its IP
+        if GPIO.input(BUTTON_PIN) == GPIO.HIGH:
+           lcd.clear()
+           print("pressed")
+           time.sleep(0.2)
+           display_ip()
+
+           # Wait for a short period to debounce the button
+           time.sleep(0.5)
+
+            # Optional: add a small delay to reduce CPU usage
+    time.sleep(1)
